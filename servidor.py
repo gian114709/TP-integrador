@@ -79,8 +79,8 @@ def atender_cliente(conexion, direccion):
                 elif comando == "/hora":
                     enviar(conexion, lock_envio, "Hora del servidor: " + datetime.now().strftime("%H:%M:%S"))
                 elif comando == "/todos":
-                    if argumento:
-                        texto = argumento.strip('"')
+                    texto = argumento.strip('"').strip()
+                    if texto:
                         enviar_a_todos(f"{usuario} para todos: {texto}")
                     else:
                         enviar(conexion, lock_envio, "Uso: /todos mensaje")
