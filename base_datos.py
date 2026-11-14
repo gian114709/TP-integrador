@@ -1,5 +1,4 @@
 import hashlib
-import hmac
 import secrets
 import sqlite3
 from pathlib import Path
@@ -46,9 +45,8 @@ def crear_tablas():
 
 def calcular_hash(clave, sal):
     # Transforma la contraseña para no guardarla como texto visible.
-    return hashlib.pbkdf2_hmac(
-        "sha256", clave.encode("utf-8"), bytes.fromhex(sal), 100_000
-    ).hex()
+    texto = sal + clave
+    return hashlib.sha256(texto.encode("utf-8")).hexdigest()
 
 
 def crear_usuario(nombre, clave):
@@ -76,7 +74,7 @@ def validar_usuario(nombre, clave):
         base.close()
     if fila is None:
         return False
-    return hmac.compare_digest(calcular_hash(clave, fila[0]), fila[1])
+    return calcular_hash(clave, fila[0]) == fila[1]
 
 
 def guardar_repositorios(usuario, repositorios):
