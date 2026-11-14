@@ -70,6 +70,17 @@ También podés abrir `redes.db` con un visor de SQLite y mirar las tablas `usua
 
 GitHub limita la cantidad de consultas sin autenticación. Si aparece un error de límite, probá más tarde; opcionalmente el programa puede usar un token propio puesto en la variable de entorno `GITHUB_TOKEN`. Nunca escribas ese token en un archivo del proyecto ni lo subas a GitHub.
 
+## Prueba guiada en una computadora
+
+1. Creá dos usuarios distintos con `python crear_usuario.py` (por ejemplo, `gian2` y `gian3`). Ejecutá el comando una vez por usuario.
+2. Iniciá `python servidor.py` en una terminal y dejala abierta. Debe aparecer `Servidor escuchando en 127.0.0.1:12345`.
+3. Abrí otras dos terminales, ejecutá `python cliente.py` en cada una e ingresá con un usuario diferente. Cada cliente debe recibir `OK Bienvenido`.
+4. En un cliente escribí `/usuarios`. La respuesta debe incluir los dos nombres conectados. Probá también `/hora`: debe devolver la hora del servidor.
+5. Escribí `/todos hola` en un cliente. Los dos clientes deben recibir el mensaje. Si escribís un texto normal, debe aparecer en la terminal del servidor. Desde esa terminal, escribí `@gian2 hola` para responder solo a `gian2`.
+6. En un cliente escribí `/repos octocat` y `/followers javierblancoedu`. El servidor debe confirmar cuántos registros guardó. En otra terminal ejecutá `python ver_base.py` y comprobá que las tablas `repositorios` y `followers` tengan filas. Estas consultas requieren Internet.
+7. Escribí `/adios` en uno de los clientes. Debe recibir la despedida y desconectarse. Desde el otro cliente, `/usuarios` ya no debe mostrarlo.
+8. Ejecutá de nuevo `python cliente.py` e ingresá una contraseña incorrecta. Debe mostrar `ERROR Usuario o contraseña incorrectos.` y cerrar esa sesión. Para terminar, escribí `/salir` en la terminal del servidor.
+
 ## Prueba entre dos computadoras de la misma red
 
 En la computadora del servidor, indicá que escuche en la red local:
