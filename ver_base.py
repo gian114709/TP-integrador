@@ -1,5 +1,4 @@
 import sqlite3
-from contextlib import closing
 
 from base_datos import ARCHIVO
 
@@ -21,11 +20,14 @@ def main():
         return
 
     print(f"Base de datos: {ARCHIVO}")
-    with closing(sqlite3.connect(ARCHIVO.as_uri() + "?mode=ro", uri=True)) as base:
+    base = sqlite3.connect(ARCHIVO)
+    try:
         mostrar_tabla(base, "usuarios", "nombre, length(sal), length(clave_hash)")
         print("  Columnas: usuario | largo de la sal | largo del hash (no la clave)")
         mostrar_tabla(base, "repositorios", "usuario_github, nombre, url")
         mostrar_tabla(base, "followers", "usuario_github, nombre, url")
+    finally:
+        base.close()
 
 
 if __name__ == "__main__":

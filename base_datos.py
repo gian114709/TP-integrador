@@ -2,7 +2,6 @@ import hashlib
 import hmac
 import secrets
 import sqlite3
-from contextlib import contextmanager
 from pathlib import Path
 
 # Esta base guarda usuarios y los datos públicos consultados en GitHub.
@@ -10,19 +9,14 @@ from pathlib import Path
 ARCHIVO = Path(__file__).with_name("redes.db")
 
 
-@contextmanager
 def conectar():
-    # Abre la base y la cierra al terminar cada operación.
-    base = sqlite3.connect(ARCHIVO, timeout=10)
-    try:
-        with base:
-            yield base
-    finally:
-        base.close()
+    # Abre la base; cada función la cierra al terminar.
+    return sqlite3.connect(ARCHIVO, timeout=10)
 
 
 def crear_tablas():
-    with conectar() as base:
+    base = conectar()
+    try:
         base.executescript("""
             CREATE TABLE IF NOT EXISTS usuarios (
                 nombre TEXT PRIMARY KEY,
@@ -45,6 +39,9 @@ def crear_tablas():
                 PRIMARY KEY (usuario_github, nombre)
             );
         """)
+        base.commit()
+    finally:
+        base.close()
 
 
 def calcular_hash(clave, sal):
@@ -57,19 +54,26 @@ def calcular_hash(clave, sal):
 def crear_usuario(nombre, clave):
     sal = secrets.token_hex(16)
     clave_hash = calcular_hash(clave, sal)
-    with conectar() as base:
+    base = conectar()
+    try:
         base.execute(
             "INSERT INTO usuarios (nombre, sal, clave_hash) VALUES (?, ?, ?)",
             (nombre, sal, clave_hash),
         )
+        base.commit()
+    finally:
+        base.close()
 
 
 def validar_usuario(nombre, clave):
     # Compara la contraseña ingresada con la guardada para ese usuario.
-    with conectar() as base:
+    base = conectar()
+    try:
         fila = base.execute(
             "SELECT sal, clave_hash FROM usuarios WHERE nombre = ?", (nombre,)
         ).fetchone()
+    finally:
+        base.close()
     if fila is None:
         return False
     return hmac.compare_digest(calcular_hash(clave, fila[0]), fila[1])
@@ -77,7 +81,8 @@ def validar_usuario(nombre, clave):
 
 def guardar_repositorios(usuario, repositorios):
     # Reemplaza los repositorios guardados de una cuenta de GitHub.
-    with conectar() as base:
+    base = conectar()
+    try:
         base.execute("DELETE FROM repositorios WHERE usuario_github = ?", (usuario,))
         base.executemany(
             "INSERT INTO repositorios VALUES (?, ?, ?, ?)",
@@ -86,13 +91,20 @@ def guardar_repositorios(usuario, repositorios):
                 for repo in repositorios
             ],
         )
+        base.commit()
+    finally:
+        base.close()
 
 
 def guardar_followers(usuario, followers):
     # Reemplaza los seguidores guardados de una cuenta de GitHub.
-    with conectar() as base:
+    base = conectar()
+    try:
         base.execute("DELETE FROM followers WHERE usuario_github = ?", (usuario,))
         base.executemany(
             "INSERT INTO followers VALUES (?, ?, ?)",
             [(usuario, persona["login"], persona["html_url"]) for persona in followers],
         )
+        base.commit()
+    finally:
+        base.close()

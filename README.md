@@ -68,7 +68,7 @@ Muestra los usuarios registrados (no sus contraseñas) y hasta 10 filas de cada 
 
 También podés abrir `redes.db` con un visor de SQLite y mirar las tablas `usuarios`, `repositorios` y `followers`. En `usuarios` se guardan una sal y un hash, no la contraseña escrita.
 
-GitHub limita la cantidad de consultas sin autenticación. Si aparece un error de límite, probá más tarde; opcionalmente el programa puede usar un token propio puesto en la variable de entorno `GITHUB_TOKEN`. Nunca escribas ese token en un archivo del proyecto ni lo subas a GitHub.
+GitHub limita la cantidad de consultas públicas. Si aparece un error de límite, probá más tarde. No guardes claves de API dentro del proyecto.
 
 ## Prueba guiada en una computadora
 

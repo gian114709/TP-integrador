@@ -1,4 +1,3 @@
-import os
 import re
 
 import requests
@@ -14,9 +13,6 @@ def consultar_github(usuario, recurso):
 
     url = f"https://api.github.com/users/{usuario}/{recurso}"
     encabezados = {"Accept": "application/vnd.github+json", "User-Agent": "TP-Redes"}
-    token = os.getenv("GITHUB_TOKEN")
-    if token:
-        encabezados["Authorization"] = f"Bearer {token}"
 
     resultados = []
     pagina = 1
