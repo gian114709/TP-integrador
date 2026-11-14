@@ -3,6 +3,7 @@ from getpass import getpass
 
 from base_datos import crear_tablas, crear_usuario
 
+# Este archivo registra un usuario nuevo para poder entrar al chat.
 
 crear_tablas()
 nombre = input("Nombre de usuario: ").strip().lower()

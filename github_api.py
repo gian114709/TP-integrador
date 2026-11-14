@@ -3,8 +3,10 @@ import re
 
 import requests
 
+# Este archivo consulta los datos públicos de la API de GitHub.
 
 def consultar_github(usuario, recurso):
+    # Trae repositorios o seguidores; avanza de página si hay más resultados.
     if recurso not in ("repos", "followers"):
         raise ValueError("Recurso de GitHub no válido.")
     if not re.fullmatch(r"[A-Za-z0-9-]{1,39}", usuario):

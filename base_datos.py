@@ -5,12 +5,14 @@ import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 
+# Esta base guarda usuarios y los datos públicos consultados en GitHub.
 
 ARCHIVO = Path(__file__).with_name("redes.db")
 
 
 @contextmanager
 def conectar():
+    # Abre la base y la cierra al terminar cada operación.
     base = sqlite3.connect(ARCHIVO, timeout=10)
     try:
         with base:
@@ -46,6 +48,7 @@ def crear_tablas():
 
 
 def calcular_hash(clave, sal):
+    # Transforma la contraseña para no guardarla como texto visible.
     return hashlib.pbkdf2_hmac(
         "sha256", clave.encode("utf-8"), bytes.fromhex(sal), 100_000
     ).hex()
@@ -62,6 +65,7 @@ def crear_usuario(nombre, clave):
 
 
 def validar_usuario(nombre, clave):
+    # Compara la contraseña ingresada con la guardada para ese usuario.
     with conectar() as base:
         fila = base.execute(
             "SELECT sal, clave_hash FROM usuarios WHERE nombre = ?", (nombre,)
@@ -72,6 +76,7 @@ def validar_usuario(nombre, clave):
 
 
 def guardar_repositorios(usuario, repositorios):
+    # Reemplaza los repositorios guardados de una cuenta de GitHub.
     with conectar() as base:
         base.execute("DELETE FROM repositorios WHERE usuario_github = ?", (usuario,))
         base.executemany(
@@ -84,6 +89,7 @@ def guardar_repositorios(usuario, repositorios):
 
 
 def guardar_followers(usuario, followers):
+    # Reemplaza los seguidores guardados de una cuenta de GitHub.
     with conectar() as base:
         base.execute("DELETE FROM followers WHERE usuario_github = ?", (usuario,))
         base.executemany(

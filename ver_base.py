@@ -3,8 +3,10 @@ from contextlib import closing
 
 from base_datos import ARCHIVO
 
+# Este archivo muestra datos de la base sin modificarlos.
 
 def mostrar_tabla(base, nombre, columnas):
+    # Muestra la cantidad de filas y hasta diez ejemplos de una tabla.
     cantidad = base.execute(f"SELECT COUNT(*) FROM {nombre}").fetchone()[0]
     print(f"\n{nombre}: {cantidad} registros")
     for fila in base.execute(f"SELECT {columnas} FROM {nombre} LIMIT 10"):

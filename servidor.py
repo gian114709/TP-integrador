@@ -4,6 +4,7 @@ import sqlite3
 import threading
 from datetime import datetime
 
+# El servidor atiende a cada cliente en un hilo distinto.
 from base_datos import (
     ARCHIVO,
     crear_tablas,
@@ -27,6 +28,7 @@ def enviar(conexion, lock_envio, texto):
 
 
 def enviar_a_todos(texto):
+    # Copia la lista de conexiones y manda el mismo mensaje a cada una.
     with lock_clientes:
         conectados = list(clientes.values())
     for conexion, lock_envio in conectados:
@@ -37,6 +39,7 @@ def enviar_a_todos(texto):
 
 
 def atender_cliente(conexion, direccion):
+    # Comprueba el usuario y responde a sus mensajes o comandos.
     usuario = None
     autenticado = False
     lock_envio = threading.Lock()
@@ -112,6 +115,7 @@ def atender_cliente(conexion, direccion):
 
 
 def leer_consola():
+    # Permite escribir mensajes desde la terminal del servidor.
     try:
         while not detener.is_set():
             texto = input("Servidor> ").strip()
@@ -140,6 +144,7 @@ def leer_consola():
 
 
 def iniciar_servidor():
+    # Abre el puerto y acepta conexiones hasta que se pida salir.
     crear_tablas()
     detener.clear()
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as servidor:

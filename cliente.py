@@ -3,18 +3,21 @@ import socket
 import threading
 from getpass import getpass
 
+# El cliente se conecta al servidor y envía los mensajes que escribe el usuario.
 
 HOST = os.getenv("REDES_SERVIDOR_IP", "127.0.0.1")
 PUERTO = 12345
 
 
 def recibir_mensajes(entrada, desconectado):
+    # Este hilo muestra los mensajes que llegan mientras el usuario escribe.
     for linea in entrada:
         print("\n" + linea.rstrip("\r\n") + "\n> ", end="", flush=True)
     desconectado.set()
 
 
 def iniciar_cliente():
+    # Pide los datos, inicia sesión y mantiene abierta la conversación.
     usuario = input("Usuario: ").strip().lower()
     clave = getpass("Contraseña: ")
 
